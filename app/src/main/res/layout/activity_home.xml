@@ -7,11 +7,10 @@
     tools:context=".HomeActivity">
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/cerrarlogeo"
         android:layout_width="239dp"
         android:layout_height="55dp"
         android:gravity="center|center_vertical"
-        android:onClick="cerrarsesion"
         android:text="Cerrar Sesión"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -26,6 +25,7 @@
         android:id="@+id/imageView2"
         android:layout_width="162dp"
         android:layout_height="141dp"
+        android:contentDescription="logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"

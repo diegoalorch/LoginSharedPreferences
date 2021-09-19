@@ -5,12 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +19,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText password;
     private Switch guardalogeo;
     private String precionar = "Mis preferencias";
-    
+    private Button logearse;
+    private String llave = "sesion";
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +32,24 @@ public class MainActivity extends AppCompatActivity {
         usuario = (EditText) findViewById(R.id.usuario);
         password = (EditText)findViewById(R.id.contraseña);
         guardalogeo = (Switch)findViewById(R.id.guardarlogin);
+
+        iniciarelementos();
+
+        if (revisarsesion()){
+            startActivity(new Intent(this, HomeActivity.class));
+        }else {
+            String mensaje = "Iniciando Sesión";
+            Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
+        }
+
+        logearse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                guardarpreferencia(guardalogeo.isChecked());
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void iniciar(View view){
@@ -53,6 +75,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void guardarlogin(View view){
 
+        boolean estado = getValuePreference(getApplicationContext());
+        guardalogeo.setChecked(estado);
+
+        guardalogeo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                guardarpreferencia(isChecked);
+
+            }
+
+        });
         if(view.getId() == R.id.guardarlogin){
 
             if (guardalogeo.isChecked()){
@@ -61,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "desactivado", Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     /* Ejemplo para guardar el estado del switch
@@ -74,21 +107,33 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }*/
 
-    public void guardarpreferencia(Context context, boolean valor){
+    public void guardarpreferencia(/*Context context,*/ boolean valor){
 
-        SharedPreferences setting = context.getSharedPreferences(precionar, MODE_PRIVATE);
+        /*SharedPreferences setting = context.getSharedPreferences(precionar, MODE_PRIVATE);
         SharedPreferences.Editor editor;
-        editor = setting.edit();
-        editor.putBoolean("estado: ", valor);
+        editor = setting.edit();*/
+        editor.putBoolean(llave, valor);
         editor.commit();
+        editor.apply();
 
     }
 
     public boolean getValuePreference(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(precionar, MODE_PRIVATE);
-        return  preferences.getBoolean("estado_switch", false);
+        boolean b = false;
+        return  preferences.getBoolean("estado: ", b);
     }
 
-    boolean estado = getValuePreference(getApplicationContext());
-    
+    public boolean revisarsesion(){
+        return this.preferences.getBoolean(llave, false);
+    }
+
+    public void iniciarelementos(){
+
+        preferences = this.getPreferences(0);
+        editor = preferences.edit();
+
+        logearse = findViewById(R.id.logearse);
+        guardalogeo = (Switch)findViewById(R.id.guardarlogin);
+    }
 }
